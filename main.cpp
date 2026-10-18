@@ -1,6 +1,8 @@
 #include <iostream>
 #include <fstream>
-#include <windows.h>
+#include <clocale>
+#include <chrono>
+#include <thread>
 #include <random>
 #include "Request.h"
 #include "Queue.h"
@@ -11,8 +13,7 @@ using std::cout;
 using std::endl;
 
 int main() {
-    SetConsoleCP(CP_UTF8);
-    SetConsoleOutputCP(CP_UTF8);
+    system("chcp 65001");
 
     std::ofstream logFile("simulation_log.txt");
     if (logFile.is_open()) {
@@ -66,7 +67,13 @@ int main() {
             logFile << "Обслужено клиентов: " << processedCount << "\n";
         }
 
-        channel.update(currentTime);
+        if (channel.update(currentTime)) {
+            processedCount++;
+            cout << "Канал закончил обслуживание заявки!" << endl;
+            if (logFile.is_open()) {
+                logFile << "Канал закончил обслуживание заявки!" << endl;
+            }
+        }
 
         if (currentTime >= nextArrivalTime) {
             Request req(nextRequestId++, currentTime);
@@ -86,7 +93,7 @@ int main() {
 
             double waitTime = currentTime - req.getArrivalTime();
             totalWaitTime += waitTime;
-            processedCount++;
+
             q.pop();
 
             cout << "Канал взял заявку из очереди!" << endl;
@@ -97,6 +104,7 @@ int main() {
                 logFile << "Канал взял " << req << ". Время ожидания: " << waitTime << " сек.\n";
             }
         }
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
     }
 
     if (processedCount > 0) {

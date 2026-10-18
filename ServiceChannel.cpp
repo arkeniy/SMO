@@ -7,10 +7,12 @@ void ServiceChannel::takeRequest(const Request &req, double currentTime, double 
     m_currentRequest = req;
     m_serviceEndTime = currentTime + serviceDuration;
 }
-void ServiceChannel::update(double currentTime) {
+bool ServiceChannel::update(double currentTime) {
     if (m_isBusy && currentTime >= m_serviceEndTime) {
         m_isBusy = false;
+        return true;
     }
+    return false;
 }
 bool ServiceChannel::isBusy() const {
     return m_isBusy;

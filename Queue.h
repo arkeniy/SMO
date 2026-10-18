@@ -22,6 +22,9 @@ public:
 
     bool isEmpty() const;
     size_t getSize() const;
+
+    Queue (const Queue&) = delete;
+    Queue& operator= (const Queue&) = delete;
 };
 
 #endif //SMO_QUEUE_H

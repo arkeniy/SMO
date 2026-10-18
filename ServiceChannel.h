@@ -12,7 +12,7 @@ private:
 public:
     ServiceChannel();
     void takeRequest(const Request& req, double currentTime, double serviceDuration);
-    void update(double currentTime);
+    bool update(double currentTime);
     bool isBusy() const;
     const Request& getCurrentRequest() const;
 

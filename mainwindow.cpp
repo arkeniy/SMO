@@ -1,20 +1,32 @@
 #include "mainwindow.h"
 
-#include <iostream>
-#include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QString>
-#include <queue>
+#include <QFormLayout>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
 m_requestId(1),
 m_currentTime(0.0),
-m_processedCount(42),
+m_processedCount(0),
 m_arrivalInterval(0.0),
-m_nextArrivalTime(0.0) {
+m_nextArrivalTime(0.0),
+m_minArrivalValue(0.0), m_maxArrivalValue(0.0),
+m_minServiceValue(0.0),m_maxServiceValue(0.0){
     m_startButton = new QPushButton("Старт симуляции", this);
-    m_arrivalInput = new QLineEdit(this);
-    m_arrivalInput->setPlaceholderText("Интервал прихода (сек)");
+    m_minArrival = new QDoubleSpinBox(this);
+    m_maxArrival = new QDoubleSpinBox(this);
+    m_maxService = new QDoubleSpinBox(this);
+    m_minService = new QDoubleSpinBox(this);
+
+    m_minArrival ->setRange(0.1,60.0);
+    m_minArrival ->setValue(1.0);
+    m_maxArrival ->setRange(0.1,60.0);
+    m_maxArrival ->setValue(1.0);
+    m_minService ->setRange(0.1,60.0);
+    m_minService ->setValue(1.0);
+    m_maxService ->setRange(0.1,60.0);
+    m_maxService ->setValue(1.0);
+
 
     m_statusLabel = new QLabel("Статус: ожидание запуска",this);
     m_timer = new QTimer(this);
@@ -22,7 +34,13 @@ m_nextArrivalTime(0.0) {
     QWidget *centralWidget = new QWidget(this);
     QVBoxLayout *mainLayout = new QVBoxLayout(centralWidget);
 
-    mainLayout->addWidget(m_arrivalInput);
+    QFormLayout *paramsLayout = new QFormLayout();
+    paramsLayout ->addRow("Мин. интервал прихода", m_minArrival);
+    paramsLayout ->addRow("Макс. интервал прихода", m_maxArrival);
+    paramsLayout ->addRow("Мин. интервал обслуживания", m_minService);
+    paramsLayout ->addRow("Макс. интервал обслуживания", m_maxService);
+
+    mainLayout->addLayout(paramsLayout);
     mainLayout->addWidget(m_startButton);
     mainLayout->addWidget(m_statusLabel);
     setCentralWidget(centralWidget);
@@ -34,12 +52,18 @@ m_nextArrivalTime(0.0) {
 MainWindow::~MainWindow(){}
 
 void MainWindow::onStartClicked() {
-    double arrivalInterval = m_arrivalInput ->text().toDouble();
+    m_processedCount = 0;
+    m_queue.clear();
+    m_channel = ServiceChannel();
+
+    m_minArrivalValue = m_minArrival->value();
+    m_maxArrivalValue = m_maxArrival->value();
+    m_minServiceValue = m_minService->value();
+    m_maxServiceValue = m_maxService->value();
+
     m_currentTime = 0;
     m_requestId = 1;
     m_timer->start(500);
-    m_arrivalInterval = m_arrivalInput ->text().toDouble();
-    m_nextArrivalTime = m_currentTime + m_arrivalInterval;
 }
 void MainWindow::onTimerStep() {
     m_currentTime += 1.0;

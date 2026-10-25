@@ -3,9 +3,9 @@
 
 #include <QMainWindow>
 #include <QTimer>
-#include <QLineEdit>
 #include <QPushButton>
 #include <QLabel>
+#include <QDoubleSpinBox>
 
 #include "Queue.h"
 #include "ServiceChannel.h"
@@ -23,7 +23,10 @@ class MainWindow : public QMainWindow {
 
     private:
     QPushButton *m_startButton;
-    QLineEdit *m_arrivalInput;
+    QDoubleSpinBox *m_minArrival;
+    QDoubleSpinBox *m_maxArrival;
+    QDoubleSpinBox *m_minService;
+    QDoubleSpinBox *m_maxService;
     QLabel *m_statusLabel;
 
     QTimer *m_timer;
@@ -32,8 +35,12 @@ class MainWindow : public QMainWindow {
 
     int m_requestId;
     int m_processedCount;
-    double m_currentTime;
-    double m_arrivalInterval;
-    double m_nextArrivalTime;
+    double m_currentTime,
+    m_arrivalInterval,
+    m_nextArrivalTime,
+    m_minArrivalValue,
+    m_maxArrivalValue,
+    m_minServiceValue,
+    m_maxServiceValue;
 };
 #endif //SMO_MAINWINDOW_H

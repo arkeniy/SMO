@@ -3,12 +3,19 @@
 
 Queue::Queue() : m_head(nullptr), m_tail(nullptr), m_size(0) {}
 Queue::~Queue() {
+    clear();
+    }
+
+void Queue::clear() {
     while (m_head != nullptr) {
         Node* temp = m_head;
         m_head = m_head->m_next;
         delete temp;
     }
+    m_tail = nullptr;
+    m_size = 0;
 }
+
 void Queue::push(const Request& req) {
     Node* newNode = new Node(req);
 

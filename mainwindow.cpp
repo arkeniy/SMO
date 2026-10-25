@@ -4,8 +4,14 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QString>
+#include <queue>
 
-MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), m_requestId(1), m_currentTime(0.0) {
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
+m_requestId(1),
+m_currentTime(0.0),
+m_processedCount(42),
+m_arrivalInterval(0.0),
+m_nextArrivalTime(0.0) {
     m_startButton = new QPushButton("Старт симуляции", this);
     m_arrivalInput = new QLineEdit(this);
     m_arrivalInput->setPlaceholderText("Интервал прихода (сек)");
@@ -32,10 +38,32 @@ void MainWindow::onStartClicked() {
     m_currentTime = 0;
     m_requestId = 1;
     m_timer->start(500);
+    m_arrivalInterval = m_arrivalInput ->text().toDouble();
+    m_nextArrivalTime = m_currentTime + m_arrivalInterval;
 }
 void MainWindow::onTimerStep() {
     m_currentTime += 1.0;
-    m_channel.update(m_currentTime);
-    m_statusLabel->setText(QString::number(m_currentTime));
+
+    if (m_channel.update(m_currentTime)) {
+        m_processedCount++;
+    }
+
+    if (m_currentTime >= m_arrivalInterval) {
+        Request req(m_requestId++, m_currentTime);
+        m_queue.push(req);
+        m_nextArrivalTime = m_currentTime + m_arrivalInterval;
+    }
+
+    if (!m_channel.isBusy()&& !m_queue.isEmpty()) {
+        Request req = m_queue.front();
+        m_queue.pop();
+        void takeRequest(const Request &req, double currentTime, double serviceDuration);
+    }
+    QString statusText = "Время: " + QString::number(m_currentTime) + " c | " +
+        "Очередь: " + QString::number(m_queue.getSize()) + " | " +
+        "Канал: " + (m_channel.isBusy() ? "Занят" : "Свободен") + " | " +
+            "Обслужено: " + QString::number(m_processedCount);
+    m_statusLabel->setText(statusText);
+
 }
 

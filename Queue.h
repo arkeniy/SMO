@@ -17,6 +17,7 @@ public:
 
     void push(const Request& req);
     void pop();
+    void clear();
 
     const Request& front() const;
 

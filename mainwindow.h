@@ -5,7 +5,7 @@
 #include <QTimer>
 #include <QLineEdit>
 #include <QPushButton>
-#include <Qlabel>
+#include <QLabel>
 
 #include "Queue.h"
 #include "ServiceChannel.h"
@@ -31,6 +31,9 @@ class MainWindow : public QMainWindow {
     ServiceChannel m_channel;
 
     int m_requestId;
+    int m_processedCount;
     double m_currentTime;
+    double m_arrivalInterval;
+    double m_nextArrivalTime;
 };
 #endif //SMO_MAINWINDOW_H

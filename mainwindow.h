@@ -1,6 +1,7 @@
 #ifndef SMO_MAINWINDOW_H
 #define SMO_MAINWINDOW_H
 
+#include <random>
 #include <QMainWindow>
 #include <QTimer>
 #include <QPushButton>
@@ -22,6 +23,7 @@ class MainWindow : public QMainWindow {
     void onTimerStep();
 
     private:
+    std:: mt19937 m_gen;
     QPushButton *m_startButton;
     QDoubleSpinBox *m_minArrival;
     QDoubleSpinBox *m_maxArrival;

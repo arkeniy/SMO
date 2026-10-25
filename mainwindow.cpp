@@ -11,7 +11,9 @@ m_processedCount(0),
 m_arrivalInterval(0.0),
 m_nextArrivalTime(0.0),
 m_minArrivalValue(0.0), m_maxArrivalValue(0.0),
-m_minServiceValue(0.0),m_maxServiceValue(0.0){
+m_minServiceValue(0.0),m_maxServiceValue(0.0),
+m_gen(std::random_device{}())
+{
     m_startButton = new QPushButton("Старт симуляции", this);
     m_minArrival = new QDoubleSpinBox(this);
     m_maxArrival = new QDoubleSpinBox(this);
@@ -21,11 +23,11 @@ m_minServiceValue(0.0),m_maxServiceValue(0.0){
     m_minArrival ->setRange(0.1,60.0);
     m_minArrival ->setValue(1.0);
     m_maxArrival ->setRange(0.1,60.0);
-    m_maxArrival ->setValue(1.0);
+    m_maxArrival ->setValue(3.0);
     m_minService ->setRange(0.1,60.0);
     m_minService ->setValue(1.0);
     m_maxService ->setRange(0.1,60.0);
-    m_maxService ->setValue(1.0);
+    m_maxService ->setValue(4.0);
 
 
     m_statusLabel = new QLabel("Статус: ожидание запуска",this);
@@ -63,7 +65,7 @@ void MainWindow::onStartClicked() {
 
     m_currentTime = 0;
     m_requestId = 1;
-    m_timer->start(500);
+    m_timer->start(1000);
 }
 void MainWindow::onTimerStep() {
     m_currentTime += 1.0;
@@ -81,7 +83,9 @@ void MainWindow::onTimerStep() {
     if (!m_channel.isBusy()&& !m_queue.isEmpty()) {
         Request req = m_queue.front();
         m_queue.pop();
-        void takeRequest(const Request &req, double currentTime, double serviceDuration);
+        std::uniform_real_distribution<double> dist(m_minServiceValue, m_maxServiceValue);
+        double duration = dist(m_gen);
+        m_channel.takeRequest(req, m_currentTime, duration);
     }
     QString statusText = "Время: " + QString::number(m_currentTime) + " c | " +
         "Очередь: " + QString::number(m_queue.getSize()) + " | " +

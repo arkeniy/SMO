@@ -38,7 +38,6 @@ class MainWindow : public QMainWindow {
     int m_requestId;
     int m_processedCount;
     double m_currentTime,
-    m_arrivalInterval,
     m_nextArrivalTime,
     m_minArrivalValue,
     m_maxArrivalValue,

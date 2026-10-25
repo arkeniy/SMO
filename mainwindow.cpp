@@ -8,7 +8,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
 m_requestId(1),
 m_currentTime(0.0),
 m_processedCount(0),
-m_arrivalInterval(0.0),
 m_nextArrivalTime(0.0),
 m_minArrivalValue(0.0), m_maxArrivalValue(0.0),
 m_minServiceValue(0.0),m_maxServiceValue(0.0),
@@ -65,6 +64,11 @@ void MainWindow::onStartClicked() {
 
     m_currentTime = 0;
     m_requestId = 1;
+
+    std::uniform_real_distribution<double> dist(m_minArrivalValue, m_maxArrivalValue);
+    double interval = dist(m_gen);
+    m_nextArrivalTime = m_currentTime + interval;
+
     m_timer->start(1000);
 }
 void MainWindow::onTimerStep() {
@@ -74,10 +78,12 @@ void MainWindow::onTimerStep() {
         m_processedCount++;
     }
 
-    if (m_currentTime >= m_arrivalInterval) {
+    if (m_currentTime >= m_nextArrivalTime) {
         Request req(m_requestId++, m_currentTime);
         m_queue.push(req);
-        m_nextArrivalTime = m_currentTime + m_arrivalInterval;
+        std::uniform_real_distribution<double> dist(m_minArrivalValue, m_maxArrivalValue);
+        double interval = dist(m_gen);
+        m_nextArrivalTime = m_currentTime + interval;
     }
 
     if (!m_channel.isBusy()&& !m_queue.isEmpty()) {

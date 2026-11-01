@@ -35,6 +35,7 @@ class MainWindow : public QMainWindow {
     QDoubleSpinBox *m_maxService;
     QLabel *m_statusLabel;
     QSpinBox *m_channelBox;
+    QSpinBox *m_maxQueueBox;
 
     QTimer *m_timer;
     Queue m_queue;
@@ -44,6 +45,8 @@ class MainWindow : public QMainWindow {
     int m_processedCount,
     m_takenCount;
     int m_channelCount;
+    int m_maxQueueValue;
+    int m_rejectedCount;
     double m_currentTime,
     m_nextArrivalTime,
     m_minArrivalValue,

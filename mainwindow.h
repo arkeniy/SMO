@@ -2,6 +2,8 @@
 #define SMO_MAINWINDOW_H
 
 #include <random>
+#include <vector>
+#include <QSpinBox>
 #include <QMainWindow>
 #include <QTimer>
 #include <QPushButton>
@@ -32,14 +34,16 @@ class MainWindow : public QMainWindow {
     QDoubleSpinBox *m_minService;
     QDoubleSpinBox *m_maxService;
     QLabel *m_statusLabel;
+    QSpinBox *m_channelBox;
 
     QTimer *m_timer;
     Queue m_queue;
-    ServiceChannel m_channel;
+    std::vector<ServiceChannel> m_channels;
 
     int m_requestId;
     int m_processedCount,
     m_takenCount;
+    int m_channelCount;
     double m_currentTime,
     m_nextArrivalTime,
     m_minArrivalValue,

@@ -6,6 +6,17 @@
 #include <QFormLayout>
 #include <QTextStream>
 
+namespace {
+    QString priorityText(Priority p) {
+        switch (p) {
+            case Priority::High:   return "высокий";
+            case Priority::Medium: return "средний";
+            case Priority::Low:    return "низкий";
+        }
+        return "?";
+    }
+}
+
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),
 m_requestId(1),
 m_currentTime(0.0),
@@ -123,12 +134,31 @@ void MainWindow::onTimerStep() {
 
 
     if (m_currentTime >= m_nextArrivalTime) {
+        std::uniform_real_distribution<double> distPrio(0.0, 1.0);
+        double u = distPrio(m_gen);
+
+        Priority priority;
+        if (u < 0.10) {
+            priority = Priority::High;
+        } else if (u < 0.40) {
+            priority = Priority::Medium;
+        } else {
+            priority = Priority::Low;
+        }
+
         if (static_cast<int>(m_queue.getSize()) < m_maxQueueValue) {
-            Request req(m_requestId++,m_currentTime);
+            Request req(m_requestId++,m_currentTime,priority);
             m_queue.push(req);
+
+        if (m_logFile -> isOpen()) {
+            QTextStream out(m_logFile);
+            out << "Поступила заявка №" << req.getId()
+            << " (" << priorityText(req.getPriority()) << ")\n";
+        }
         }else {
             m_rejectedCount++;
         }
+
         std::uniform_real_distribution<double> dist(m_minArrivalValue, m_maxArrivalValue);
         double interval = dist(m_gen);
         m_nextArrivalTime = m_currentTime + interval;
@@ -154,6 +184,11 @@ void MainWindow::onTimerStep() {
             std::uniform_real_distribution<double> dist(m_minServiceValue, m_maxServiceValue);
             double duration = dist(m_gen);
             m_channels[freeChannel].takeRequest(req, m_currentTime,duration);
+            if (m_logFile->isOpen()) {
+                QTextStream out(m_logFile);
+                out << "Взята заявка №" << req.getId()
+                << " (" << priorityText(req.getPriority()) << ")\n";
+            }
         }
     }
 

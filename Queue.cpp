@@ -18,13 +18,24 @@ void Queue::clear() {
 
 void Queue::push(const Request& req) {
     Node* newNode = new Node(req);
-
-    if (isEmpty()) {
+    Node* prev = nullptr;
+    Node* cur = m_head;
+    while (cur != nullptr && cur->m_data.getPriority() >= req.getPriority()) {//пропускаем всех
+        prev = cur;
+        cur = cur->m_next;
+    }
+    if (prev == nullptr) {
+        newNode->m_next = m_head;
         m_head = newNode;
+        if (m_tail == nullptr) {
+            m_tail = newNode;
+        }
+    }else if (cur == nullptr) {
+        prev->m_next = newNode;
         m_tail = newNode;
     }else {
-        m_tail->m_next = newNode;
-        m_tail = newNode;
+        newNode->m_next = cur;
+        prev->m_next = newNode;
     }
     m_size++;
 }

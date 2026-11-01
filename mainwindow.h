@@ -23,12 +23,14 @@ class MainWindow : public QMainWindow {
 
     private slots:
     void onStartClicked();
+    void onStopClicked();
     void onTimerStep();
 
     private:
     std:: mt19937 m_gen;
     QFile *m_logFile;
     QPushButton *m_startButton;
+    QPushButton *m_stopButton;
     QDoubleSpinBox *m_minArrival;
     QDoubleSpinBox *m_maxArrival;
     QDoubleSpinBox *m_minService;

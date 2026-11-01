@@ -21,6 +21,7 @@ m_gen(std::random_device{}()),
 m_totalWaitTime(0.0)
 {
     m_startButton = new QPushButton("Старт симуляции", this);
+    m_stopButton = new QPushButton("Остановка симуляции", this);
     m_minArrival = new QDoubleSpinBox(this);
     m_maxArrival = new QDoubleSpinBox(this);
     m_maxService = new QDoubleSpinBox(this);
@@ -58,10 +59,12 @@ m_totalWaitTime(0.0)
 
     mainLayout->addLayout(paramsLayout);
     mainLayout->addWidget(m_startButton);
+    mainLayout->addWidget(m_stopButton);
     mainLayout->addWidget(m_statusLabel);
     setCentralWidget(centralWidget);
 
     connect(m_startButton, &QPushButton::clicked,this,&MainWindow::onStartClicked);
+    connect(m_stopButton, &QPushButton::clicked,this,&MainWindow::onStopClicked);
     connect(m_timer, &QTimer::timeout,this,&MainWindow::onTimerStep);
 }
 
@@ -99,6 +102,15 @@ void MainWindow::onStartClicked() {
     out << "Интервал обслуживания: " << m_minServiceValue << " - " << m_maxServiceValue << " с\n";
     out << "Ёмкость очереди: " << m_maxQueueValue << " заявок\n";
     m_timer->start(1000);
+}
+void MainWindow::onStopClicked() {
+    m_timer->stop();
+    m_statusLabel->setText("Статус: симуляция остановлена");
+
+    if (m_logFile -> isOpen()) {
+        QTextStream out(m_logFile);
+        out << "---Симуляция остановлена---\n";
+    }
 }
 void MainWindow::onTimerStep() {
     m_currentTime += 1.0;
